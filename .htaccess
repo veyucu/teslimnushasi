@@ -1,0 +1,18 @@
+# JSON dosyalarını web erişiminden koru
+<FilesMatch "\.json$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Config dosyalarını koru
+<FilesMatch "(config\.php|\.htaccess)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Dizin listelemeyi kapat
+Options -Indexes
+
+# PHP hata mesajlarını gizle (production)
+php_flag display_errors off
+php_flag log_errors on

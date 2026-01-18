@@ -1,0 +1,3 @@
+# includes klasörüne doğrudan erişimi engelle
+Order Allow,Deny
+Deny from all

@@ -1,0 +1,27 @@
+# Hassas dosyalar
+*.json
+!package.json
+includes/config.php
+
+# Uploads
+uploads/*
+!uploads/.htaccess
+!uploads/.gitkeep
+
+# Log dosyaları
+documentai_logs/
+*.log
+
+# Geçici dosyalar
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Örnek klasör (opsiyonel)
+# Example/

@@ -1,0 +1,16 @@
+# Uploads klasörünü koru
+# Sadece PHP üzerinden erişime izin ver
+
+<FilesMatch "\.(php|html|htm)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# WebP ve diğer resim dosyalarına izin ver
+<FilesMatch "\.(webp|jpg|jpeg|png|gif)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Dizin listelemeyi kapat
+Options -Indexes
