@@ -996,6 +996,7 @@ $user = currentUser();
                                 <select id="type_${index}" onchange="validateCard(${index})">
                                     <option value="fatura" ${result.belge_tipi === 'fatura' ? 'selected' : ''}>Fatura</option>
                                     <option value="irsaliye" ${result.belge_tipi === 'irsaliye' ? 'selected' : ''}>İrsaliye</option>
+                                    <option value="fis" ${result.belge_tipi === 'fis' ? 'selected' : ''}>Fiş</option>
                                 </select>
                             </div>
                             <div class="result-field">
@@ -1158,6 +1159,7 @@ $user = currentUser();
                             <select id="modal_type" style="width:100%;padding:8px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:4px;color:var(--text-primary)">
                                 <option value="fatura" ${document.getElementById('type_' + index).value === 'fatura' ? 'selected' : ''}>Fatura</option>
                                 <option value="irsaliye" ${document.getElementById('type_' + index).value === 'irsaliye' ? 'selected' : ''}>İrsaliye</option>
+                                <option value="fis" ${document.getElementById('type_' + index).value === 'fis' ? 'selected' : ''}>Fiş</option>
                             </select>
                         </div>
                         <div class="result-field">

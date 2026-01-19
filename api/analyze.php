@@ -130,7 +130,7 @@ function analyzeWithDocumentAI($filePath, $relativePath, $thumbnailPath)
         curl_close($ch);
 
         // Debug log - sadece DEBUG_MODE aktifken kaydet
-        if (DEBUG_MODE) {
+        if (defined('DEBUG_MODE') && DEBUG_MODE) {
             $logDir = __DIR__ . '/../documentai_logs/';
             if (!is_dir($logDir))
                 mkdir($logDir, 0755, true);
@@ -162,27 +162,29 @@ function parseDocumentAIResponse($response, $relativePath, $thumbnailPath)
     $document = $response['document'] ?? [];
     $text = $document['text'] ?? '';
     $pages = $document['pages'] ?? [];
+    $entities = $document['entities'] ?? [];
 
     if (empty($text)) {
         return [createEmptyDocument($relativePath, $thumbnailPath)];
     }
 
-    // Text'ten önce belge tipini belirle
+    // Text'ten belge verileri çıkar (Fiş için extractDataFromText içinde erken dönüş yapılıyor)
     $docData = extractDataFromText($text);
     $belgeTipi = $docData['belge_tipi'];
 
-    // FormFields'tan veri çıkar (belge tipine göre)
-    $formFieldsData = extractFromFormFields($pages, $belgeTipi);
+    // FATURA/İRSALİYE için FormFields'tan ek veri çıkar (Fiş için gerek yok - extractDataFromText'te tamamlandı)
+    if ($belgeTipi !== 'fis') {
+        $formFieldsData = extractFromFormFields($pages, $belgeTipi);
 
-    // FormFields verilerini öncelikle kullan
-    if (!empty($formFieldsData['belge_no'])) {
-        $docData['belge_no'] = $formFieldsData['belge_no'];
-    }
-    if (!empty($formFieldsData['tarih'])) {
-        $docData['tarih'] = $formFieldsData['tarih'];
-    }
-    if (!empty($formFieldsData['musteri'])) {
-        $docData['musteri'] = $formFieldsData['musteri'];
+        if (!empty($formFieldsData['belge_no'])) {
+            $docData['belge_no'] = $formFieldsData['belge_no'];
+        }
+        if (!empty($formFieldsData['tarih'])) {
+            $docData['tarih'] = $formFieldsData['tarih'];
+        }
+        if (!empty($formFieldsData['musteri'])) {
+            $docData['musteri'] = $formFieldsData['musteri'];
+        }
     }
 
     $docData['file_path'] = $relativePath;
@@ -263,6 +265,36 @@ function extractDataFromText($text)
     $textUpper = mb_strtoupper($text, 'UTF-8');
 
     // ============ 1. BELGE TİPİ ============
+    // ÖNCE FİŞ KONTROL ET - text "SAYIN" ile başlıyorsa Fiş
+    $textTrimmed = trim($text);
+    if (mb_stripos($textTrimmed, 'SAYIN') === 0) {
+        // FİŞ - Tamamen farklı işleme mantığı
+        $data['belge_tipi'] = 'fis';
+
+        // Fiş Belge No: 3 harf + 12 rakam = 15 haneli (örn: YGG202600000014)
+        if (preg_match('/\b([A-Z]{3}\d{12})\b/', $text, $matches)) {
+            $data['belge_no'] = $matches[1];
+        }
+
+        // Fiş Tarih: İlk dd.mm.yyyy veya dd-mm-yyyy veya dd/mm/yyyy
+        if (preg_match('/(\d{2})[\.\-\/](\d{2})[\.\-\/](\d{4})/', $text, $matches)) {
+            $data['tarih'] = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+        }
+
+        // Fiş Müşteri: SAYIN'dan sonraki isim
+        $lines = explode("\n", $textTrimmed);
+        if (!empty($lines[0])) {
+            $data['musteri'] = preg_replace('/^SAYIN\s*/i', '', $lines[0]);
+        }
+
+        // Fiş'te ETTN ve VKN yok
+        $data['ettn'] = '';
+        $data['vkn'] = '';
+
+        return $data; // Fiş için erken dönüş
+    }
+
+    // FATURA / İRSALİYE için standart işleme
     // Python app.py mantığı: ÖNCE FATURA KONTROL ET (çünkü faturada irsaliye bilgisi olabiliyor)
 
     // Fatura pattern'leri (Python: fatura_patterns - satır 207)

@@ -37,7 +37,7 @@ if (isset($_POST['delete_ids'])) {
 }
 
 // İstatistikler ve belgeler
-$stats = ['total' => 0, 'fatura' => 0, 'irsaliye' => 0];
+$stats = ['total' => 0, 'fatura' => 0, 'irsaliye' => 0, 'fis' => 0];
 $documents = [];
 
 try {
@@ -49,6 +49,7 @@ try {
     $stats['total'] = count($documents);
     $stats['fatura'] = count(array_filter($documents, fn($d) => $d['document_type'] === 'fatura'));
     $stats['irsaliye'] = count(array_filter($documents, fn($d) => $d['document_type'] === 'irsaliye'));
+    $stats['fis'] = count(array_filter($documents, fn($d) => $d['document_type'] === 'fis'));
 } catch (Exception $e) {
 }
 
@@ -972,6 +973,10 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
                         <div class="value"><?= $stats['irsaliye'] ?></div>
                         <div class="label">İrsaliye</div>
                     </div>
+                    <div class="nav-stat">
+                        <div class="value"><?= $stats['fis'] ?></div>
+                        <div class="label">Fiş</div>
+                    </div>
                 </div>
                 <div class="nav-actions">
                     <?php if (isAdmin()): ?>
@@ -1094,7 +1099,7 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
             },
             {
                 field: 'document_type', headerName: 'Tip', width: 80,
-                valueFormatter: p => p.value === 'fatura' ? 'Fatura' : 'İrsaliye',
+                valueFormatter: p => p.value === 'fatura' ? 'Fatura' : (p.value === 'irsaliye' ? 'İrsaliye' : 'Fiş'),
                 cellStyle: { display: 'flex', justifyContent: 'center', alignItems: 'center' }
             },
             { field: 'document_no', headerName: 'Belge No', width: 140 },
