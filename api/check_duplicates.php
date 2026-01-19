@@ -1,12 +1,22 @@
 <?php
 /**
  * Duplikat Belge Kontrolü API
- * ETTN ve belge no için veritabanı kontrolü yapar
+ * ETTN ve belge no için kullanıcının kendi belgeleri içinde kontrol yapar
  */
 
+require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 
 header('Content-Type: application/json');
+
+// Giriş kontrolü
+if (!isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Oturum açmanız gerekiyor']);
+    exit;
+}
+
+$user = currentUser();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -30,22 +40,22 @@ try {
     foreach ($documents as $index => $doc) {
         $reasons = [];
 
-        // ETTN kontrolü
+        // ETTN kontrolü - sadece bu kullanıcının belgeleri
         if (!empty($doc['ettn'])) {
             $stmt = db()->query(
-                "SELECT id FROM documents WHERE ettn = ? LIMIT 1",
-                [$doc['ettn']]
+                "SELECT id FROM documents WHERE user_id = ? AND ettn = ? LIMIT 1",
+                [$user['id'], $doc['ettn']]
             );
             if ($stmt->fetch()) {
                 $reasons[] = 'ETTN veritabanında mevcut';
             }
         }
 
-        // Belge tipi + Belge No kontrolü
+        // Belge tipi + Belge No kontrolü - sadece bu kullanıcının belgeleri
         if (!empty($doc['document_type']) && !empty($doc['document_no'])) {
             $stmt = db()->query(
-                "SELECT id FROM documents WHERE document_type = ? AND document_no = ? LIMIT 1",
-                [$doc['document_type'], $doc['document_no']]
+                "SELECT id FROM documents WHERE user_id = ? AND document_type = ? AND document_no = ? LIMIT 1",
+                [$user['id'], $doc['document_type'], $doc['document_no']]
             );
             if ($stmt->fetch()) {
                 $reasons[] = 'Aynı tipte belge no veritabanında mevcut';

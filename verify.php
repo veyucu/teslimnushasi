@@ -32,8 +32,8 @@ if (empty($token)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Doğrulama - Teslim Nüshası</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -42,7 +42,7 @@ if (empty($token)) {
     <div class="auth-page">
         <div class="auth-card">
             <div class="auth-header">
-                <a href="index.php" class="logo">
+                <a href="/" class="logo">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -56,13 +56,13 @@ if (empty($token)) {
                 <div class="alert alert-success">
                     ✅ Email adresiniz başarıyla doğrulandı!
                 </div>
-                <a href="login.php?verified=1" class="btn btn-primary btn-lg" style="width:100%;text-align:center;">Giriş
+                <a href="login?verified=1" class="btn btn-primary btn-lg" style="width:100%;text-align:center;">Giriş
                     Yap</a>
             <?php else: ?>
                 <div class="alert alert-danger">
                     <?= htmlspecialchars($error) ?>
                 </div>
-                <a href="login.php" class="btn btn-outline btn-lg" style="width:100%;text-align:center;">Giriş Sayfasına
+                <a href="login" class="btn btn-outline btn-lg" style="width:100%;text-align:center;">Giriş Sayfasına
                     Dön</a>
             <?php endif; ?>
         </div>

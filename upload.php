@@ -17,8 +17,8 @@ $user = currentUser();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Belge Yükle - Teslim Nüshası</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -542,7 +542,7 @@ $user = currentUser();
     <div class="dashboard">
         <nav class="dashboard-nav">
             <div class="container">
-                <a href="documents.php" class="navbar-brand">
+                <a href="documents" class="navbar-brand">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -552,7 +552,7 @@ $user = currentUser();
                 </a>
                 <div class="nav-actions">
                     <span style="color: var(--text-muted);"><?= htmlspecialchars($user['name']) ?></span>
-                    <a href="logout.php" class="btn btn-outline btn-sm">Çıkış</a>
+                    <a href="logout" class="btn btn-outline btn-sm">Çıkış</a>
                 </div>
             </div>
         </nav>
@@ -560,7 +560,7 @@ $user = currentUser();
         <div class="dashboard-content">
             <div class="container">
                 <div class="upload-container">
-                    <a href="documents.php" class="back-link">
+                    <a href="documents" class="back-link">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />

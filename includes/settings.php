@@ -6,13 +6,57 @@
 require_once __DIR__ . '/db.php';
 
 /**
+ * Veriyi şifrele
+ */
+function encryptValue($value)
+{
+    if (empty($value))
+        return '';
+    $key = defined('ENCRYPTION_KEY') ? ENCRYPTION_KEY : 'default-key';
+    $iv = openssl_random_pseudo_bytes(16);
+    $encrypted = openssl_encrypt($value, 'AES-256-CBC', $key, 0, $iv);
+    return base64_encode($iv . $encrypted);
+}
+
+/**
+ * Şifreli veriyi çöz
+ */
+function decryptValue($encrypted)
+{
+    if (empty($encrypted))
+        return '';
+    $key = defined('ENCRYPTION_KEY') ? ENCRYPTION_KEY : 'default-key';
+    $data = base64_decode($encrypted);
+    $iv = substr($data, 0, 16);
+    $encrypted = substr($data, 16);
+    return openssl_decrypt($encrypted, 'AES-256-CBC', $key, 0, $iv);
+}
+
+/**
+ * Hassas ayarlar listesi
+ */
+function isSensitiveSetting($key)
+{
+    return in_array($key, ['smtp_password']);
+}
+
+/**
  * Ayar değerini al
  */
 function getSetting($key, $default = null)
 {
     try {
         $result = db()->fetch("SELECT setting_value FROM settings WHERE setting_key = ?", [$key]);
-        return $result ? $result['setting_value'] : $default;
+        if (!$result)
+            return $default;
+
+        $value = $result['setting_value'];
+        // Hassas ayarları çöz
+        if (isSensitiveSetting($key) && !empty($value)) {
+            $decrypted = decryptValue($value);
+            return $decrypted !== false ? $decrypted : $default;
+        }
+        return $value;
     } catch (Exception $e) {
         return $default;
     }
@@ -24,6 +68,11 @@ function getSetting($key, $default = null)
 function setSetting($key, $value)
 {
     try {
+        // Hassas ayarları şifrele
+        if (isSensitiveSetting($key) && !empty($value)) {
+            $value = encryptValue($value);
+        }
+
         $existing = db()->fetch("SELECT id FROM settings WHERE setting_key = ?", [$key]);
         if ($existing) {
             db()->query("UPDATE settings SET setting_value = ?, updated_at = NOW() WHERE setting_key = ?", [$value, $key]);
@@ -201,7 +250,7 @@ function sendEmail($to, $subject, $body)
 function sendVerificationEmail($email, $name, $token)
 {
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-    $verifyUrl = $baseUrl . "/teslimnushasi/verify.php?token=" . urlencode($token);
+    $verifyUrl = $baseUrl . "/verify?token=" . urlencode($token);
 
     $subject = "Email Doğrulama - Teslim Nüshası";
     $body = "
@@ -229,7 +278,7 @@ function sendVerificationEmail($email, $name, $token)
 function sendPasswordResetEmail($email, $name, $token)
 {
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-    $resetUrl = $baseUrl . "/teslimnushasi/reset_password.php?token=" . urlencode($token);
+    $resetUrl = $baseUrl . "/reset_password?token=" . urlencode($token);
 
     $subject = "Şifre Sıfırlama - Teslim Nüshası";
     $body = "

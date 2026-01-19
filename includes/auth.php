@@ -107,7 +107,7 @@ function isAdmin()
 function requireLogin()
 {
     if (!isLoggedIn()) {
-        header('Location: login.php');
+        header('Location: login');
         exit;
     }
 }
@@ -119,7 +119,7 @@ function requireAdmin()
 {
     requireLogin();
     if (!isAdmin()) {
-        header('Location: documents.php');
+        header('Location: documents');
         exit;
     }
 }

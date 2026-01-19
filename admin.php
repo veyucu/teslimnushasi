@@ -23,7 +23,9 @@ $users = db()->query("
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Teslim Nüshası</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -169,7 +171,7 @@ $users = db()->query("
     <div class="dashboard">
         <nav class="dashboard-nav">
             <div class="container">
-                <a href="documents.php" class="navbar-brand">
+                <a href="documents" class="navbar-brand">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -178,12 +180,12 @@ $users = db()->query("
                     <span class="brand-text">Teslim <br>Nüshası</span>
                 </a>
                 <div class="nav-actions">
-                    <a href="settings.php" class="btn btn-outline btn-sm">⚙️ Ayarlar</a>
-                    <a href="documents.php" class="btn btn-outline btn-sm">Belgeler</a>
+                    <a href="settings" class="btn btn-outline btn-sm">⚙️ Ayarlar</a>
+                    <a href="documents" class="btn btn-outline btn-sm">Belgeler</a>
                     <span style="color: var(--text-muted);">
                         <?= htmlspecialchars($user['name']) ?>
                     </span>
-                    <a href="logout.php" class="btn btn-outline btn-sm">Çıkış</a>
+                    <a href="logout" class="btn btn-outline btn-sm">Çıkış</a>
                 </div>
             </div>
         </nav>
@@ -359,7 +361,7 @@ $users = db()->query("
         }
 
         function editUser(id) {
-            const user = rowData.find(u => u.id === id);
+            const user = rowData.find(u => u.id == id);
             if (!user) return;
 
             isNewUser = false;

@@ -63,7 +63,9 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Belgeler - Teslim Nüshası</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -949,7 +951,7 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
         <!-- Navbar -->
         <nav class="dashboard-nav">
             <div class="container">
-                <a href="documents.php" class="navbar-brand">
+                <a href="documents" class="navbar-brand">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -973,9 +975,9 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
                 </div>
                 <div class="nav-actions">
                     <?php if (isAdmin()): ?>
-                        <a href="admin.php" class="btn btn-outline btn-sm" title="Admin Panel">🛡️</a>
+                        <a href="admin" class="btn btn-outline btn-sm" title="Admin Panel">🛡️</a>
                     <?php endif; ?>
-                    <a href="upload.php" class="btn btn-primary">
+                    <a href="upload" class="btn btn-primary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -983,7 +985,7 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
                         Belge Yükle
                     </a>
                     <span style="color: var(--text-muted);"><?= htmlspecialchars($user['name']) ?></span>
-                    <a href="logout.php" class="btn btn-outline btn-sm">Çıkış</a>
+                    <a href="logout" class="btn btn-outline btn-sm">Çıkış</a>
                 </div>
             </div>
         </nav>
@@ -1268,18 +1270,14 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
 
             const links = selected
                 .filter(doc => doc.public_id)
-                .map(doc => window.location.origin + '/teslimnushasi/view.php?id=' + doc.public_id);
+                .map(doc => window.location.origin + '/view/' + doc.public_id);
 
             if (links.length === 0) {
                 alert('Seçilen belgelerde paylaşım linki yok');
                 return;
             }
 
-            navigator.clipboard.writeText(links.join('\n')).then(() => {
-                alert(links.length + ' belge linki kopyalandı!');
-            }).catch(() => {
-                prompt('Linkleri kopyalayın:', links.join('\n'));
-            });
+            copyToClipboard(links.join('\n'), links.length + ' belge linki kopyalandı!');
         }
 
         async function openDocument(id) {
@@ -1343,7 +1341,7 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
             const selected = gridOptions.api.getSelectedRows();
             if (selected.length === 0) return;
 
-            if (confirm(`${selected.length} belge silinecektir.Emin misiniz ? `)) {
+            if (confirm(`${selected.length} belge silinecektir. Emin misiniz?`)) {
                 const ids = selected.map(r => r.id);
                 document.getElementById('deleteIdsInput').value = JSON.stringify(ids);
                 document.getElementById('deleteForm').submit();
@@ -1460,14 +1458,40 @@ $defaultStartDate = date('Y-m-d', strtotime('-7 days'));
             applyFilters();
         }
 
+        // Güvenli clipboard fonksiyonu (HTTPS olmadan da çalışır)
+        function copyToClipboard(text, successMsg) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(successMsg || 'Kopyalandı!');
+                }).catch(() => {
+                    fallbackCopy(text, successMsg);
+                });
+            } else {
+                fallbackCopy(text, successMsg);
+            }
+        }
+
+        function fallbackCopy(text, successMsg) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                alert(successMsg || 'Kopyalandı!');
+            } catch (err) {
+                prompt('Linki kopyalayın:', text);
+            }
+            document.body.removeChild(textarea);
+        }
+
         // Paylaşım linkini kopyala
         function copyLink(publicId) {
-            const url = window.location.origin + '/teslimnushasi/view.php?id=' + publicId;
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Link panoya kopyalandı!');
-            }).catch(() => {
-                prompt('Linki kopyalayın:', url);
-            });
+            const url = window.location.origin + '/view/' + publicId;
+            copyToClipboard(url, 'Link panoya kopyalandı!');
         }
 
         document.querySelectorAll('.filter-group input').forEach(input => {

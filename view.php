@@ -48,8 +48,8 @@ $belgeBaslik = $document['document_no'] ?: 'Belge';
     <title>
         <?= htmlspecialchars($belgeBaslik) ?> - Belge Görüntüleme
     </title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -189,7 +189,7 @@ $belgeBaslik = $document['document_no'] ?: 'Belge';
 <body>
     <div class="view-container">
         <div class="view-header">
-            <a href="documents.php" class="brand" style="text-decoration:none;">
+            <a href="/" class="brand" style="text-decoration:none;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -212,7 +212,7 @@ $belgeBaslik = $document['document_no'] ?: 'Belge';
         <div class="pages-container" id="pagesContainer">
             <?php foreach ($pages as $index => $pagePath): ?>
                 <div class="page-item">
-                    <img src="<?= htmlspecialchars($pagePath) ?>" alt="Sayfa <?= $index + 1 ?>" class="page-image">
+                    <img src="/<?= htmlspecialchars($pagePath) ?>" alt="Sayfa <?= $index + 1 ?>" class="page-image">
                 </div>
             <?php endforeach; ?>
         </div>

@@ -44,14 +44,15 @@ if ($file['size'] > 10 * 1024 * 1024) {
 // Gelen dosya adını kullan (UUID formatında)
 $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
 $fileName = $originalName . '.' . $fileExt;
-$uploadDir = __DIR__ . '/../uploads/temp/';
+$userId = $user['id'];
+$uploadDir = __DIR__ . '/../uploads/temp/' . $userId . '/';
 
 if (!is_dir($uploadDir)) {
     mkdir($uploadDir, 0755, true);
 }
 
 $filePath = $uploadDir . $fileName;
-$relativePath = 'uploads/temp/' . $fileName;
+$relativePath = 'uploads/temp/' . $userId . '/' . $fileName;
 
 if (!move_uploaded_file($file['tmp_name'], $filePath)) {
     echo json_encode(['success' => false, 'message' => 'Dosya kaydedilemedi']);
@@ -128,13 +129,15 @@ function analyzeWithDocumentAI($filePath, $relativePath, $thumbnailPath)
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        // Debug log - her işlemi resim adıyla kaydet
-        $logDir = __DIR__ . '/../documentai_logs/';
-        if (!is_dir($logDir))
-            mkdir($logDir, 0755, true);
-        $logFileName = pathinfo($filePath, PATHINFO_FILENAME);
-        file_put_contents($logDir . "{$logFileName}.json", $response);
-        file_put_contents($logDir . 'last_response.json', $response);
+        // Debug log - sadece DEBUG_MODE aktifken kaydet
+        if (DEBUG_MODE) {
+            $logDir = __DIR__ . '/../documentai_logs/';
+            if (!is_dir($logDir))
+                mkdir($logDir, 0755, true);
+            $logFileName = pathinfo($filePath, PATHINFO_FILENAME);
+            file_put_contents($logDir . "{$logFileName}.json", $response);
+            file_put_contents($logDir . 'last_response.json', $response);
+        }
 
         if ($httpCode === 200) {
             $result = json_decode($response, true);

@@ -1,3 +1,22 @@
+# URL Rewriting - .php uzantılarını gizle
+RewriteEngine On
+
+# www'suz hali www'lu yapma (opsiyonel)
+# RewriteCond %{HTTP_HOST} ^teslimnushasi\.com$ [NC]
+# RewriteRule ^(.*)$ https://www.teslimnushasi.com/$1 [R=301,L]
+
+# Uploads ve assets klasörlerini rewrite'dan hariç tut
+RewriteRule ^(uploads|assets)/ - [L]
+
+# view.php için özel kural (view/ID formatı) - ÖNCELİKLİ
+RewriteRule ^view/([a-zA-Z0-9]+)/?$ view.php?id=$1 [NC,L,QSA]
+
+# .php uzantısını gizle
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
 # JSON dosyalarını web erişiminden koru
 <FilesMatch "\.json$">
     Order Allow,Deny

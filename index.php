@@ -7,7 +7,9 @@
     <title>Teslim Nüshası - İmzalı Belgelerinizi Dijital Ortamda Saklayın</title>
     <meta name="description"
         content="İmzalı fatura ve irsaliye nüshalarınızı güvenle saklayın, kolayca bulun. Teslim Nüshası ile evrak kaybına son!">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -17,7 +19,7 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <a href="index.php" class="navbar-brand">
+            <a href="/" class="navbar-brand">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -35,8 +37,8 @@
                 <li><a href="#features">Özellikler</a></li>
                 <li><a href="#how-it-works">Nasıl Çalışır</a></li>
                 <li><a href="#contact">İletişim</a></li>
-                <li><a href="login.php" class="btn btn-outline">Giriş Yap</a></li>
-                <li><a href="register.php" class="btn btn-primary">Kayıt Ol</a></li>
+                <li><a href="login" class="btn btn-outline">Giriş Yap</a></li>
+                <li><a href="register" class="btn btn-primary">Kayıt Ol</a></li>
             </ul>
         </div>
     </nav>
@@ -49,7 +51,7 @@
                 <p>Fatura ve irsaliye teslim nüshalarınızı güvenle arşivleyin, saniyeler içinde bulun. Artık evrak
                     aramakla vakit kaybetmeyin!</p>
                 <div class="hero-buttons">
-                    <a href="register.php" class="btn btn-primary btn-lg">
+                    <a href="register" class="btn btn-primary btn-lg">
                         Ücretsiz Başlayın
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
@@ -184,7 +186,7 @@
                     <p>Arşivlenen Belge</p>
                 </div>
                 <div class="stat-item">
-                    <h3>500+</h3>
+                    <h3>100+</h3>
                     <p>Aktif Kullanıcı</p>
                 </div>
                 <div class="stat-item">
@@ -230,21 +232,22 @@
                     </ul>
                 </div>
 
-                <form class="contact-form" action="contact.php" method="POST">
+                <form class="contact-form" id="contactForm" onsubmit="submitContact(event)">
                     <div class="form-group">
                         <label for="name">Adınız Soyadınız</label>
-                        <input type="text" id="name" name="name" class="form-control" required>
+                        <input type="text" id="contactName" name="name" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="email">E-posta Adresiniz</label>
-                        <input type="email" id="email" name="email" class="form-control" required>
+                        <input type="email" id="contactEmail" name="email" class="form-control" required>
                     </div>
                     <div class="form-group">
                         <label for="message">Mesajınız</label>
-                        <textarea id="message" name="message" class="form-control" rows="4" required></textarea>
+                        <textarea id="contactMessage" name="message" class="form-control" rows="4" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg">Mesaj Gönder</button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="contactBtn">Mesaj Gönder</button>
                 </form>
+                <div id="contactToast" class="contact-toast"></div>
             </div>
         </div>
     </section>
@@ -277,8 +280,8 @@
                 <div>
                     <h4>Hesap</h4>
                     <ul class="footer-links">
-                        <li><a href="login.php">Giriş Yap</a></li>
-                        <li><a href="register.php">Kayıt Ol</a></li>
+                        <li><a href="login">Giriş Yap</a></li>
+                        <li><a href="register">Kayıt Ol</a></li>
                     </ul>
                 </div>
             </div>
@@ -303,6 +306,47 @@
                 navbar.style.boxShadow = 'none';
             }
         });
+
+        // İletişim formu AJAX
+        async function submitContact(e) {
+            e.preventDefault();
+            const btn = document.getElementById('contactBtn');
+            const toast = document.getElementById('contactToast');
+
+            btn.disabled = true;
+            btn.textContent = 'Gönderiliyor...';
+
+            try {
+                const res = await fetch('/api/contact.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('contactName').value,
+                        email: document.getElementById('contactEmail').value,
+                        message: document.getElementById('contactMessage').value
+                    })
+                });
+                const data = await res.json();
+
+                toast.textContent = data.message;
+                toast.className = 'contact-toast ' + (data.success ? 'success' : 'error');
+                toast.style.display = 'block';
+
+                if (data.success) {
+                    document.getElementById('contactForm').reset();
+                }
+
+                setTimeout(() => { toast.style.display = 'none'; }, 4000);
+            } catch (err) {
+                toast.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                toast.className = 'contact-toast error';
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 4000);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Mesaj Gönder';
+        }
     </script>
 </body>
 

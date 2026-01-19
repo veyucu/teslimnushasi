@@ -121,17 +121,21 @@ foreach ($documents as $doc) {
     }
 }
 
-// Sadece işlenen belgelerin temp dosyalarını sil
+// Sadece bu kullanıcının temp dosyalarını sil
+$userTempDir = __DIR__ . '/../uploads/temp/' . $user['id'] . '/';
 foreach ($documents as $doc) {
     foreach ($doc['pages'] ?? [] as $page) {
         $filePath = $page['file_path'] ?? '';
-        // UUID'yi al ve temp klasöründeki dosyayı sil
-        $uuid = pathinfo($filePath, PATHINFO_FILENAME);
-        $tempFilePath = __DIR__ . '/../uploads/temp/' . $uuid . '.webp';
+        $fileName = pathinfo($filePath, PATHINFO_BASENAME);
+        $tempFilePath = $userTempDir . $fileName;
         if (file_exists($tempFilePath)) {
             unlink($tempFilePath);
         }
     }
+}
+// Kullanıcının temp klasörü boşsa sil
+if (is_dir($userTempDir) && count(glob($userTempDir . '*')) === 0) {
+    rmdir($userTempDir);
 }
 
 echo json_encode([

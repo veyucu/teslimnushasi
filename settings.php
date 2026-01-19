@@ -9,6 +9,7 @@ $user = currentUser();
 
 // Mevcut ayarları al
 $settings = [
+    'registration_enabled' => getSetting('registration_enabled', '1'),
     'default_document_limit' => getSetting('default_document_limit', '100'),
     'require_email_verification' => getSetting('require_email_verification', '1'),
     'smtp_host' => getSetting('smtp_host', ''),
@@ -25,6 +26,7 @@ $error = '';
 // Form gönderildiğinde
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        setSetting('registration_enabled', isset($_POST['registration_enabled']) ? '1' : '0');
         setSetting('default_document_limit', $_POST['default_document_limit'] ?? '100');
         setSetting('require_email_verification', isset($_POST['require_email_verification']) ? '1' : '0');
         setSetting('smtp_host', $_POST['smtp_host'] ?? '');
@@ -40,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Ayarları yeniden yükle
         $settings = [
+            'registration_enabled' => getSetting('registration_enabled', '1'),
             'default_document_limit' => getSetting('default_document_limit', '100'),
             'require_email_verification' => getSetting('require_email_verification', '1'),
             'smtp_host' => getSetting('smtp_host', ''),
@@ -61,7 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ayarlar - Admin Panel</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -153,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="dashboard">
         <nav class="dashboard-nav">
             <div class="container">
-                <a href="documents.php" class="navbar-brand">
+                <a href="documents" class="navbar-brand">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -162,9 +167,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span class="brand-text">Teslim <br>Nüshası</span>
                 </a>
                 <div class="nav-actions">
-                    <a href="admin.php" class="btn btn-outline btn-sm">Kullanıcılar</a>
-                    <a href="documents.php" class="btn btn-outline btn-sm">Belgeler</a>
-                    <a href="logout.php" class="btn btn-outline btn-sm">Çıkış</a>
+                    <a href="admin" class="btn btn-outline btn-sm">Kullanıcılar</a>
+                    <a href="documents" class="btn btn-outline btn-sm">Belgeler</a>
+                    <a href="logout" class="btn btn-outline btn-sm">Çıkış</a>
                 </div>
             </div>
         </nav>
@@ -190,6 +195,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form method="POST">
                         <div class="settings-section">
                             <h2>📄 Genel Ayarlar</h2>
+                            <div class="form-group checkbox">
+                                <input type="checkbox" name="registration_enabled" id="registration_enabled"
+                                    <?= $settings['registration_enabled'] === '1' ? 'checked' : '' ?>>
+                                <label for="registration_enabled">Yeni üye alımı aktif</label>
+                            </div>
                             <div class="form-group">
                                 <label>Varsayılan Belge Limiti</label>
                                 <input type="number" name="default_document_limit"
